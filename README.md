@@ -1,63 +1,56 @@
-# Simulation & DevOps Infrastructure
+# Swarmbotics Simulation & DevOps
 
-## Description
-`swarmbotics-sim-devops` is a comprehensive orchestration, simulation, and continuous deployment pipeline designed for massive-scale robotic swarms. It enables developers to test the "Hive Mind" in contested, GPS-denied tactical environments before securely deploying over-the-air (OTA) updates to a global fleet of Unmanned Ground Vehicles (UGVs).
+`swarmbotics-sim-devops` provides the pre-deployment proving ground for the swarm stack. The repository now contains a tracked simulation environment, headless behavior tests and GitHub Actions workflows, and an OTA subsystem spanning rollout orchestration, an edge agent, partition management, and payload verification.
 
-## Table of Contents
-- [Features](#-features)
-- [Technologies Used](#%EF%B8%8F-technologies-used)
-- [Installation](#%EF%B8%8F-installation)
-- [Usage](#-usage)
-- [Contributing](#-contributing)
-- [License](#-license)
+## Components
 
-## 🚀 Features
-* **Tactical Simulation Environment**: SITL (Software-In-The-Loop) and HITL (Hardware-In-The-Loop) simulation using Ignition/Gazebo. Includes 3D visuals, collision geometry, and physics for the `fireant-ugv`.
-* **Contested Environments**: Test swarms in custom worlds like GPS-denied urban canyons (multipath errors) and open plains featuring adversary EW jammers.
-* **Network Degradation Sim**: Built-in Mininet mesh simulations that artificially inject latency, packet loss, and jamming to mimic chaotic tactical communications.
-* **Automated Behavior Testing**: Comprehensive CI/CD suites that run headless Gazebo tests to validate swarm flanking logic and communication failovers (e.g., switching to SATCOM when the mesh drops).
-* **Zero-Trust OTA Updates**: A highly secure fleet management backend paired with an ultra-reliable Rust edge client (`ota-agent.rs`) running on Ubuntu Core. Ensures updates are cryptographically verified and utilizes dual-bank A/B partitions for bulletproof rollbacks.
+- `simulation-environment/`: Fireant UGV model assets, tactical worlds, large-swarm spawn planning, HITL bridge configuration, and Mininet-style mesh degradation simulation.
+- `ci-cd-pipelines/`: GitHub Actions workflows and behavior test suites for flanking logic and communications failover.
+- `ota-update-system/`: Go rollout services, a Rust edge client, partition rollback handling, and key/signature verification scripts.
 
-## 🛠️ Technologies Used
-* **Simulation & Robotics**: ROS, Ignition/Gazebo, C++
-* **Networking**: Mininet, Python
-* **CI/CD**: GitHub Actions / GitLab CI, Docker
-* **OTA & Edge**: Go, Rust, Bash, Ubuntu Core
+## Validation
 
-## ⚙️ Installation
+Use the root validation targets:
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/mtepenner/swarmbotics-sim-devops.git
-   cd swarmbotics-sim-devops
-   ```
-2. Install simulation dependencies (Ignition/Gazebo and ROS).
-3. Set up the Mininet mesh simulator for network testing.
-4. Ensure Docker is installed for building the C2 backend containers.
-
-## 💻 Usage
-
-### Launching the Swarm Simulation
-To instantiate 100+ UGVs with unique namespaces in a simulated environment:
 ```bash
-python3 simulation-environment/launch-scripts/spawn-swarm.py
+make validate
+make smoke
 ```
 
-### Running Automated Behavior Tests
-Run the automated test suite locally to validate the swarm's "Hive Mind" logic:
+`make validate` checks Python syntax, Go package compilation via `go test`, shell syntax, and XML validity of the SDF assets. `make smoke` runs the spawn planner, network degradation simulator, and behavior tests once with sample inputs.
+
+## Usage
+
+Plan a swarm simulation launch:
+
+```bash
+python3 simulation-environment/launch-scripts/spawn-swarm.py --count 24 --world urban-canyon --once
+```
+
+Preview a degraded network profile:
+
+```bash
+python3 simulation-environment/network-sim/mininet-mesh-sim.py --scenario contested-plains --once
+```
+
+Run the behavior tests directly:
+
 ```bash
 python3 ci-cd-pipelines/behavior-test-suites/test-flanking-logic.py
 python3 ci-cd-pipelines/behavior-test-suites/test-comms-failover.py
 ```
 
-### Edge Device Hardware-In-The-Loop
-To route simulated sensor data into a physical edge compute board:
+Compile the OTA edge agent:
+
 ```bash
-ros2 launch simulation-environment/launch-scripts/hitl-bridge.launch.py
+rustc --edition 2021 ota-update-system/edge-client/ota-agent.rs -o ota-agent
 ```
 
-## 🤝 Contributing
-Contributions to improve the simulation accuracy, add new tactical scenarios, or harden the OTA pipeline are welcome. Please ensure that any new behavior logic is accompanied by a headless simulation test in the `ci-cd-pipelines` folder.
+## CI/CD
 
-## 📄 License
-This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
+The GitHub Actions workflows under `ci-cd-pipelines/.github/workflows/` cover simulation asset validation, headless behavior tests, and a placeholder C2 container build flow driven by Docker Buildx.
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
+

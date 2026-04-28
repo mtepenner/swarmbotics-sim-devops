@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="contested_plains">
+    <gravity>0 0 -9.8</gravity>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ground Plane</uri>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Sun</uri>
+    </include>
+    <model name="fireant_spawn_anchor">
+      <include>
+        <uri>model://fireant-ugv</uri>
+      </include>
+      <pose>0 0 0 0 0 0</pose>
+    </model>
+    <model name="ew_jammer">
+      <pose>18 10 1 0 0 0</pose>
+      <link name="mast">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.8</radius>
+              <length>2.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.8</radius>
+              <length>2.0</length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+    <plugin name="ew_jamming_profile" filename="libignition-gazebo-system.so">
+      <jammer_power_dbm>32</jammer_power_dbm>
+      <sweep_period_s>5</sweep_period_s>
+      <mesh_packet_loss_pct>18</mesh_packet_loss_pct>
+    </plugin>
+  </world>
+</sdf>

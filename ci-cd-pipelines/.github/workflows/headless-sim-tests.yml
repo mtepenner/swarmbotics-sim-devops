@@ -1,0 +1,21 @@
+name: headless-sim-tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  behavior-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Generate swarm plan
+        run: python simulation-environment/launch-scripts/spawn-swarm.py --count 12 --world urban-canyon --once
+      - name: Run flanking logic test
+        run: python ci-cd-pipelines/behavior-test-suites/test-flanking-logic.py
+      - name: Run comms failover test
+        run: python ci-cd-pipelines/behavior-test-suites/test-comms-failover.py

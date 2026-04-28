@@ -1,0 +1,19 @@
+name: build-ros-edge
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate-sim-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile Python automation
+        run: python -m compileall simulation-environment ci-cd-pipelines ota-update-system
+      - name: Validate SDF assets
+        run: python -c "from pathlib import Path; import xml.etree.ElementTree as ET; [ET.parse(str(path)) for path in Path('simulation-environment').rglob('*.sdf')]; print('SDF XML validation passed.')"

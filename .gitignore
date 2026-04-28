@@ -1,0 +1,25 @@
+# Editor and OS files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Python artifacts
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+
+# Go artifacts
+bin/
+*.test
+
+# Rust artifacts
+target/
+*.exe
+
+# Build and output directories
+build/
+dist/
+ota-update-system/crypto-security/out/

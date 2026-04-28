@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="urban_canyon">
+    <gravity>0 0 -9.8</gravity>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ground Plane</uri>
+    </include>
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Sun</uri>
+    </include>
+    <model name="fireant_spawn_anchor">
+      <include>
+        <uri>model://fireant-ugv</uri>
+      </include>
+      <pose>0 0 0 0 0 0</pose>
+    </model>
+    <model name="tower_east">
+      <pose>12 4 12 0 0 0</pose>
+      <link name="core">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>6 6 24</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>6 6 24</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+    <model name="tower_west">
+      <pose>-12 -4 14 0 0 0</pose>
+      <link name="core">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>8 8 28</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>8 8 28</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+    <plugin name="gps_denial_profile" filename="libignition-gazebo-system.so">
+      <multipath_error_m>14.0</multipath_error_m>
+      <urban_masking>true</urban_masking>
+    </plugin>
+  </world>
+</sdf>
